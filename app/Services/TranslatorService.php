@@ -8,19 +8,21 @@ class TranslatorService
     protected $service;
     protected $request;
 
-    public function __construct($request)
+    public function __construct()
     {
         $this->config = $this->loadService();
-        $this->request = $request;
     }
 
-    public function translate()
+    public function translate($request)
     {
-        return $this->service->translate($this->request);
+        return $this->service->translate($request);
     }
+
     public function loadService()
     {
-        $config = config('ai.connection');
-        $this->service = new $config['service_class']($config);
+        $connection = config('ai.connection');
+        $service = config("ai.{$connection}");
+        $this->service = new $service['service_class']($service);
     }
+    
 }

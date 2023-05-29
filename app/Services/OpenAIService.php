@@ -17,11 +17,11 @@ class OpenAIService
         $this->connect();
     }
 
-    protected function translate($request)
+    public function translate($request)
     {   
         return $this->connection
             ->post($this->config['url'], [
-                'prompt' => $request['input'],
+                'prompt' => "Translate \"{$request['input']}\" into {$request['input_language']}",
                 'max_tokens' => $request['max_tokens'] ?? $this->config['max_tokens'],
                 'temperature' => $this->config['temperature'] ?? $this->config['temperature'],
             ])
@@ -30,6 +30,7 @@ class OpenAIService
                 // Log Error here
                 info($e->getMessage());
             })
+            // ->json()['choices'][0]['text'] ?? $this->failed();            
             ->json();            
     }
 
@@ -37,5 +38,10 @@ class OpenAIService
     {
         $this->connection = Http::withoutVerifying()
             ->withHeaders($this->config['headers']);
+    }
+
+    private function failed()
+    {
+        return response()->json('Failed', 500);
     }
 }
